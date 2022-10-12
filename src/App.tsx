@@ -1,11 +1,47 @@
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import { AccountForm } from './AccountForm';
 import { AddressForm } from './AddressForm';
-import { useMultiStepForm } from './useMultistepForm';
+import { useMultiStepForm } from './useMultiStepForm';
 import { UserForm } from './UserForm';
 
+type FormData = {
+	firstName: string;
+	lastName: string;
+	age: string;
+	street: string;
+	city: string;
+	state: string;
+	zip: string;
+	email: string;
+	password: string;
+};
+
+const INITIAL_DATA: FormData = {
+	firstName: '',
+	lastName: '',
+	age: '',
+	street: '',
+	city: '',
+	state: '',
+	zip: '',
+	email: '',
+	password: '',
+};
+
 function App() {
-	const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } = useMultiStepForm([<UserForm />, <AddressForm />, <AccountForm />]);
+	const [data, setData] = useState(INITIAL_DATA);
+
+	function updateFields(fields: Partial<FormData>) {
+		setData((prev) => {
+			return { ...prev, ...fields };
+		});
+	}
+
+	const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } = useMultiStepForm([
+		<UserForm {...data} updateFields={updateFields} />,
+		<AddressForm {...data} updateFields={updateFields} />,
+		<AccountForm {...data} updateFields={updateFields} />,
+	]);
 
 	function onSubmit(e: FormEvent) {
 		e.preventDefault();
